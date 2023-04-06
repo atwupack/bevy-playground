@@ -1,4 +1,5 @@
 use bevy::prelude::*;
+use bevy::render::view::VisibilitySystems;
 use bevy::sprite::Anchor;
 use crate::defs::{PLAY_RELOAD, PLAYER_BULLET_SPEED, PLAYER_SPEED, SCREEN_HEIGHT, SCREEN_WIDTH};
 
@@ -19,7 +20,7 @@ fn main() {
             .set(ImagePlugin::default_linear())
         )
         .add_startup_system(setup)
-        .insert_resource(ClearColor(Color::rgb_u8(96, 128, 255)))
+        .insert_resource(ClearColor(Color::rgb_u8(32, 32, 32)))
         .add_system(move_player.before(apply_velocity))
         .add_system(shoot_player_bullet.before(apply_velocity))
         .add_system(apply_velocity)
@@ -56,6 +57,19 @@ fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
             ..default()
         })
     );
+}
+
+fn is_entity_visible(transform: &Transform, image: &Image) -> bool {
+    let width = image.size().x;
+    let height = image.size().y;
+
+    true
+}
+
+fn despawn_invisible_player_bullets(mut commands: Commands, query: Query<Entity, With<PlayerBullet>>) {
+    for entity in query.iter() {
+        commands.entity(entity).despawn();
+    }
 }
 
 fn move_player(keyboard_input: Res<Input<KeyCode>>, mut query: Query<&mut Velocity, With<Player>>) {
@@ -100,9 +114,15 @@ fn shoot_player_bullet(time: Res<Time>, mut commands: Commands, asset_server: Re
     };
 }
 
+
+
 fn apply_velocity(time: Res<Time>, mut query: Query<(&mut Transform, &Velocity)>) {
+    let mut count = 0;
     for (mut transform, velocity) in &mut query {
+        count += 1;
         transform.translation.x += velocity.0.x * time.delta_seconds();
         transform.translation.y += velocity.0.y * time.delta_seconds();
     }
+    info!("Found {} entities.", count)
 }
+
