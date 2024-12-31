@@ -1,7 +1,7 @@
-use bevy::prelude::*;
-use crate::defs::{PLAY_RELOAD, PLAYER_BULLET_SPEED, PLAYER_SPEED, SCREEN_HEIGHT, SCREEN_WIDTH};
+use crate::defs::{PLAYER_BULLET_SPEED, PLAYER_SPEED, PLAY_RELOAD, SCREEN_HEIGHT, SCREEN_WIDTH};
 use crate::player::{move_player, shoot_player_bullet, spawn_player};
 use crate::stage::init_stage;
+use bevy::prelude::*;
 
 mod defs;
 mod player;
@@ -9,17 +9,18 @@ mod stage;
 
 fn main() {
     App::new()
-        .add_plugins(DefaultPlugins
-            .set(WindowPlugin {
-                primary_window: Some(Window {
-                    title : "Shooter".into(),
-                    resolution: (SCREEN_WIDTH, SCREEN_HEIGHT).into(),
-                    resizable: false,
+        .add_plugins(
+            DefaultPlugins
+                .set(WindowPlugin {
+                    primary_window: Some(Window {
+                        title: "Shooter".into(),
+                        resolution: (SCREEN_WIDTH, SCREEN_HEIGHT).into(),
+                        resizable: false,
+                        ..default()
+                    }),
                     ..default()
-                }),
-                ..default()
-            })
-            .set(ImagePlugin::default_linear())
+                })
+                .set(ImagePlugin::default_linear()),
         )
         .add_systems(Startup, setup)
         .insert_resource(ClearColor(Color::srgb_u8(32, 32, 32)))
@@ -29,11 +30,8 @@ fn main() {
         .run();
 }
 
-
-
 #[derive(Component)]
 struct Velocity(Vec2);
-
 
 fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
     init_stage(commands, asset_server);
@@ -46,11 +44,6 @@ fn is_entity_visible(transform: &Transform, image: &Image) -> bool {
     true
 }
 
-
-
-
-
-
 fn apply_velocity(time: Res<Time>, mut query: Query<(&mut Transform, &Velocity)>) {
     let mut count = 0;
     for (mut transform, velocity) in &mut query {
@@ -60,4 +53,3 @@ fn apply_velocity(time: Res<Time>, mut query: Query<(&mut Transform, &Velocity)>
     }
     info!("Found {} entities.", count)
 }
-

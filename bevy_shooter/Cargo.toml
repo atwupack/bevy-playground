@@ -10,4 +10,4 @@ edition = "2021"
 [dependencies.bevy]
 version = "0.15.0"
 default-features = false
-features = ["bevy_sprite", "png", "bevy_window", "bevy_winit"]
+features = ["bevy_sprite", "png", "bevy_window", "bevy_winit", "wayland"]

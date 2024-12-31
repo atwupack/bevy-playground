@@ -1,4 +1,3 @@
-
 pub const SCREEN_WIDTH: f32 = 1280.;
 pub const SCREEN_HEIGHT: f32 = 720.;
 pub const PLAYER_SPEED: f32 = 4.0 * 60.0;

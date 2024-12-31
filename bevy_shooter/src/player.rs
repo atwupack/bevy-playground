@@ -1,9 +1,11 @@
+use crate::defs::{PLAYER_BULLET_SPEED, PLAYER_SPEED, PLAY_RELOAD};
+use crate::Velocity;
 use bevy::asset::AssetServer;
 use bevy::input::ButtonInput;
 use bevy::math::Vec2;
-use bevy::prelude::{Commands, Component, KeyCode, Query, Res, Sprite, Time, Timer, TimerMode, Transform, With};
-use crate::defs::{PLAYER_BULLET_SPEED, PLAYER_SPEED, PLAY_RELOAD};
-use crate::Velocity;
+use bevy::prelude::{
+    Commands, Component, KeyCode, Query, Res, Sprite, Time, Timer, TimerMode, Transform, With,
+};
 
 #[derive(Component)]
 pub struct Player;
@@ -23,11 +25,13 @@ pub fn spawn_player(mut commands: Commands, asset_server: Res<AssetServer>, posi
         Velocity(Vec2::default()),
         Sprite::from_image(asset_server.load("gfx/player.png")),
         Transform::from_xyz(position.x, position.y, 0.0),
-    )
-    );
+    ));
 }
 
-pub fn move_player(keyboard_input: Res<ButtonInput<KeyCode>>, mut query: Query<&mut Velocity, With<Player>>) {
+pub fn move_player(
+    keyboard_input: Res<ButtonInput<KeyCode>>,
+    mut query: Query<&mut Velocity, With<Player>>,
+) {
     let mut player_velocity = query.single_mut();
 
     player_velocity.0.x = 0.0;
@@ -46,11 +50,19 @@ pub fn move_player(keyboard_input: Res<ButtonInput<KeyCode>>, mut query: Query<&
     }
 }
 
-pub fn shoot_player_bullet(time: Res<Time>, mut commands: Commands, asset_server: Res<AssetServer>, keyboard_input: Res<ButtonInput<KeyCode>>, mut query: Query<(&Transform, &mut PlayerShootTimer), With<Player>>) {
+pub fn shoot_player_bullet(
+    time: Res<Time>,
+    mut commands: Commands,
+    asset_server: Res<AssetServer>,
+    keyboard_input: Res<ButtonInput<KeyCode>>,
+    mut query: Query<(&Transform, &mut PlayerShootTimer), With<Player>>,
+) {
     let (player_transform, mut shoot_timer) = query.single_mut();
     shoot_timer.0.tick(time.delta());
 
-    if keyboard_input.pressed(KeyCode::ShiftLeft) && (shoot_timer.0.paused() || shoot_timer.0.finished()) {
+    if keyboard_input.pressed(KeyCode::ShiftLeft)
+        && (shoot_timer.0.paused() || shoot_timer.0.finished())
+    {
         shoot_timer.0.reset();
         shoot_timer.0.unpause();
         commands.spawn((
